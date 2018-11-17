@@ -24,6 +24,8 @@ public class CalcSkin extends Application {
         launch(args);
     }
     private static final String[][] template = {
+            {"sin", "cos", "tan", "-x"},
+            { "x²", "√", "xⁿ", "1/x"},
             { "7", "8", "9", "/" },
             { "4", "5", "6", "*" },
             { "1", "2", "3", "-" },
@@ -36,7 +38,8 @@ public class CalcSkin extends Application {
     private DoubleProperty currentValue = new SimpleDoubleProperty();
     private CalcEngine calcEngine = new CalcEngine();
 
-    private enum Op { NOOP, ADD, SUBTRACT, MULTIPLY, DIVIDE }
+    private enum Op { NOOP, ADD, SUBTRACT, MULTIPLY, DIVIDE, SQUARE, SQUAREROOT, EXPONENT,
+    INVERSE, INVERT, FINDSIN, FINDCOS, FINDTAN}
 
     private Op curOp   = Op.NOOP;
     private Op stackOp = Op.NOOP;
@@ -127,6 +130,15 @@ public class CalcSkin extends Application {
             case "-": triggerOp.set(Op.SUBTRACT); break;
             case "*": triggerOp.set(Op.MULTIPLY); break;
             case "/": triggerOp.set(Op.DIVIDE);   break;
+            case "x²": triggerOp.set(Op.SQUARE);   break;
+            case "√": triggerOp.set(Op.SQUAREROOT); break;
+            case "xⁿ": triggerOp.set(Op.EXPONENT); break;
+            case "1/x": triggerOp.set(Op.INVERSE); break;
+            case "sin": triggerOp.set(Op.FINDSIN); break;
+            case "cos": triggerOp.set(Op.FINDCOS); break;
+            case "tan": triggerOp.set(Op.FINDTAN); break;
+            case "-x": triggerOp.set(Op.INVERT); break;
+
         }
         return triggerOp;
     }
@@ -136,7 +148,37 @@ public class CalcSkin extends Application {
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                curOp = triggerOp.get();
+                if (triggerOp.get() == Op.SQUARE) {
+                    currentValue.set(calcEngine.square(currentValue.get()));
+                    stackOp = curOp;
+                    curOp = Op.NOOP;
+                }else if(triggerOp.get() ==  Op.SQUAREROOT){
+                    currentValue.set(calcEngine.squareroot(currentValue.get()));
+                    stackOp = curOp;
+                    curOp = Op.NOOP;
+                }else if(triggerOp.get() ==  Op.FINDCOS){
+                    currentValue.set(calcEngine.findCos(currentValue.get()));
+                    stackOp = curOp;
+                    curOp = Op.NOOP;
+                }else if(triggerOp.get() ==  Op.FINDSIN){
+                    currentValue.set(calcEngine.findSin(currentValue.get()));
+                    stackOp = curOp;
+                    curOp = Op.NOOP;
+                }else if(triggerOp.get() ==  Op.FINDTAN){
+                    currentValue.set(calcEngine.findTan(currentValue.get()));
+                    stackOp = curOp;
+                    curOp = Op.NOOP;
+                }else if(triggerOp.get() ==  Op.INVERSE){
+                    currentValue.set(calcEngine.inverse(currentValue.get()));
+                    stackOp = curOp;
+                    curOp = Op.NOOP;
+                }else if(triggerOp.get() ==  Op.INVERT){
+                    currentValue.set(calcEngine.invert(currentValue.get()));
+                    stackOp = curOp;
+                    curOp = Op.NOOP;
+                } else {
+                    curOp = triggerOp.get();
+                }
             }
         });
     }
@@ -185,6 +227,14 @@ public class CalcSkin extends Application {
                     case SUBTRACT: currentValue.set(calcEngine.subtract(previousValue.get(), currentValue.get())); break;
                     case MULTIPLY: currentValue.set(calcEngine.multiply(previousValue.get(), currentValue.get())); break;
                     case DIVIDE:   currentValue.set(calcEngine.divide(previousValue.get(), currentValue.get())); break;
+                    case SQUARE:   currentValue.set(calcEngine.square(currentValue.get())); break;
+                    case SQUAREROOT: currentValue.set(calcEngine.squareroot(previousValue.get())); break;
+                    case INVERSE: currentValue.set(calcEngine.inverse(currentValue.get())); break;
+                    case INVERT: currentValue.set(calcEngine.invert(currentValue.get())); break;
+                    case FINDSIN: currentValue.set(calcEngine.findSin(currentValue.get())); break;
+                    case FINDCOS: currentValue.set(calcEngine.findCos(currentValue.get())); break;
+                    case FINDTAN: currentValue.set(calcEngine.findTan(currentValue.get())); break;
+                    case EXPONENT: currentValue.set(calcEngine.exponent(previousValue.get(), currentValue.get())); break;
                 }
             }
         });
